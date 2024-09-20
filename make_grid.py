@@ -6,7 +6,7 @@ import numpy as np
 # Task: make SNR and Reflectivity grids at 5km resolution (7200 in longitude and 3600 in latitude)
 
 # reads a given NetCDF4 file and updates the SNR and Reflectivity grid arguments with the values
-def read_file(file, grid_snr, grid_reflectivity):
+def read_file(file, grid_snr, grid_reflectivity):    
     nc_file = netCDF4.Dataset(file, "r", format="NETCDF4")
 
     # variables in 1D arrays; we use the lon and lat values to locate the Reflectivity and SNR values 
@@ -15,24 +15,23 @@ def read_file(file, grid_snr, grid_reflectivity):
     lon = nc_file.variables['sp_lon'][:]
     lat = nc_file.variables['sp_lat'][:]
 
-    for i in range(len(reflectivity)):
-        # the lon and lat values in the files range from [0, 360] and [-90, 90] respectively
-        # we convert to [0, 360] and [0, 180] first to avoid negatives being interpreted incorrectly as XY
-        # when creating the graph we interpret the coordinates as [-180, 180] and [-90, 90]
-        x = int((lon[i]) / 0.05)
-        y = int((lat[i] + 90) / 0.05)
+    # the lon and lat values in the files range from [0, 360] and [-90, 90] respectively
+    # we convert to [0, 360] and [0, 180] first to avoid negatives being interpreted incorrectly as XY
+    # when creating the graph we interpret the coordinates as [-180, 180] and [-90, 90]
+    x = (lon / 0.05).astype(int)
+    y = ((lat + 90) / 0.05).astype(int)
 
-        # the prior conversions allow for 7200 and 3600 coordinates which don't fit into the grid 
-        x = max(min(x, 7199), 0)
-        y = max(min(y, 3599), 0)
+    # the prior conversions allow for 7200 and 3600 coordinates which don't fit into the grid 
+    x = np.clip(x, 0, 7199)
+    y = np.clip(y, 0, 3599)
 
-        # the data contains masked and NaN values that we want to avoid 
-        if not np.ma.is_masked(snr[i]) and not np.isnan(snr[i]):
-            # y comes before x because python arrays are accessed with rows before cols
-            grid_snr[y][x] = snr[i]
+    # the data contains masked and NaN values that we want to avoid 
+    valid_snr = ~np.ma.getmaskarray(snr) & ~np.isnan(snr)
+    valid_reflectivity = ~np.ma.getmaskarray(reflectivity) & ~np.isnan(reflectivity)
 
-        if not np.ma.is_masked(reflectivity[i]) and not np.isnan(reflectivity[i]):
-            grid_reflectivity[y][x] = reflectivity[i]
+    # looks complicated; just does grid[y[i]][x[i]] = snr[i] for where SNR is valid (not masked or NaN)
+    grid_snr[y[valid_snr], x[valid_snr]] = snr[valid_snr]
+    grid_reflectivity[y[valid_reflectivity], x[valid_reflectivity]] = reflectivity[valid_reflectivity]
 
     nc_file.close()
     
@@ -67,7 +66,7 @@ if __name__ == "__main__":
     reflectivity_grid = np.nan_to_num(reflectivity_grid, nan=-9999)
 
     # pickle files are nice
-    with open('/data01/lpu/snr_grid.pkl', 'wb') as f:
+    with open('/data01/lpu/snr_grid_parallel.pkl', 'wb') as f:
         pickle.dump(snr_grid, f)
-    with open('/data01/lpu/reflectivity_grid.pkl', 'wb') as f:
+    with open('/data01/lpu/reflectivity_grid_parallel.pkl', 'wb') as f:
         pickle.dump(reflectivity_grid, f)

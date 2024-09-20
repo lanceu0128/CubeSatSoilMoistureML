@@ -17,7 +17,7 @@ def create_figure(grid, title, label, file_name, isomin, isomax):
     lon_grid, lat_grid = np.meshgrid(lon_vals, lat_vals)
 
     # remove values that are equal to -9999 (the default value in make_grid.py)
-    masked_grid = np.ma.masked_where(grid == -9999, grid)
+    masked_grid = np.ma.masked_where(np.logical_or(grid == -9999, grid == 0), grid)
 
     cs = m.pcolormesh(lon_grid, lat_grid, masked_grid, shading='auto', 
                     cmap='viridis', vmin=isomin, vmax=isomax)
@@ -35,13 +35,17 @@ def create_figure(grid, title, label, file_name, isomin, isomax):
     plt.close()
 
 if __name__ == "__main__":
-    with open('/data01/lpu/snr_grid.pkl', 'rb') as f:
-        snr_grid = pickle.load(f)
-    with open('/data01/lpu/reflectivity_grid.pkl', 'rb') as f:
-        reflectivity_grid = pickle.load(f)
+    # with open('/data01/lpu/spire_snr_grid.pkl', 'rb') as f:
+    #     spire_snr_grid = pickle.load(f)
+    with open('/data01/lpu/spire_reflectivity_grid.pkl', 'rb') as f:
+        spire_reflectivity_grid = pickle.load(f)
+    # with open('/data01/lpu/cygnss_snr_grid.pkl', 'rb') as f:
+    #     cygnss_snr_grid = pickle.load(f)
+    with open('/data01/lpu/cygnss_reflectivity_grid.pkl', 'rb') as f:
+        cygnss_reflectivity_grid = pickle.load(f)
 
-    print(f"SNR Min: {np.min(snr_grid)}, Max: {np.max(snr_grid)}")
-    print(f"Reflectivity Min: {np.min(reflectivity_grid)}, Max: {np.max(reflectivity_grid)}")
-
-    # create_figure(snr_grid, "SNR 06-2024", "SNR (dB)", "snr_map.png", 0, 10)
-    create_figure(reflectivity_grid, "Reflectivity 06-2024", "Reflectivity (dBZ)", "reflectivity_map.png", -20, 20)
+    # create_figure(spire_snr_grid, "SPIRE SNR 04-2024", "SNR (dB)", "spire_snr_map.png", 0, 10)
+    create_figure(spire_reflectivity_grid, "SPIRE Reflectivity 04-2024", "Reflectivity (dBZ)", "spire_reflectivity_map.png", -20, 20)
+    # create_figure(cygnss_snr_grid, "CYGNSS SNR 04-2024", "SNR (dB)", "cygnss_snr_map.png", 0, 10)
+    create_figure(cygnss_reflectivity_grid, "CYGNSS Reflectivity 04-2024", "Reflectivity (dBZ)", "cygnss_reflectivity_map.png", -20, 20)
+    
