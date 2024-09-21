@@ -1,0 +1,27 @@
+	float sp_lon(sample, ddm) ;
+		sp_lon:long_name = "Specular point longitude" ;
+		sp_lon:standard_name = "longitude" ;
+		sp_lon:units = "degrees_east" ;
+		sp_lon:_FillValue = -9999.f ;
+		sp_lon:comment = "Specular point longitude, in degrees East, at ddm_timestamp_utc" ;
+
+    float sp_lat(sample, ddm) ;
+		sp_lat:long_name = "Specular point latitude" ;
+		sp_lat:standard_name = "latitude" ;
+		sp_lat:units = "degrees_north" ;
+		sp_lat:_FillValue = -9999.f ;
+		sp_lat:comment = "Specular point latitude, in degrees North, at ddm_timestamp_utc" ;
+
+    float reflectivity_peak(sample, ddm) ;
+		reflectivity_peak:long_name = "Peak linear reflectivity" ;
+		reflectivity_peak:coordinates = "sp_lat sp_lon" ;
+		reflectivity_peak:units = "linear" ;
+		reflectivity_peak:_FillValue = -9999.f ;
+		reflectivity_peak:comment = "Surface reflectivity calculate at the DDM peak power bin [3]." ;
+
+    float ddm_snr(sample, ddm) ;
+		ddm_snr:long_name = "DDM signal to noise ratio" ;
+		ddm_snr:coordinates = "ddm_timestamp_utc sp_lat sp_lon" ;
+		ddm_snr:units = "dB" ;
+		ddm_snr:_FillValue = -9999.f ;
+		ddm_snr:comment = "10log(Smax/Navg), where Smax is the maximum value (in raw counts) in a single DDM bin and Navg is the the average per-bin raw noise counts. ddm_snr is in dB, at ddm_timestamp_utc." ;
