@@ -24,10 +24,10 @@ def read_file(file, grid_snr, grid_refl, grid_count_snr, grid_count_refl):
     valid_snr = ~np.ma.getmaskarray(snr) & ~np.isnan(snr)
     valid_refl = ~np.ma.getmaskarray(refl) & ~np.isnan(refl)
 
-    grid_snr[y[valid_snr], x[valid_snr]] = snr[valid_snr]
+    grid_snr[y[valid_snr], x[valid_snr]] += snr[valid_snr]
     grid_count_snr[y[valid_snr], x[valid_snr]] += 1
 
-    grid_refl[y[valid_refl], x[valid_refl]] = refl[valid_refl]
+    grid_refl[y[valid_refl], x[valid_refl]] += refl[valid_refl]
     grid_count_refl[y[valid_refl], x[valid_refl]] += 1
 
     nc_file.close()
@@ -39,28 +39,28 @@ if __name__ == "__main__":
     month = "-e202305"
 
     # lat ~ [-45, 45], so we need to have 1800 lat values in the grid to keep the same resolution
-    snr_grid = np.full((1800, 7200), -9999)
-    refl_grid = np.full((1800, 7200), -9999)
+    snr_grid = np.zeros((1800,7200))
+    refl_grid = np.zeros((1800,7200))
     count_snr_grid = np.zeros((1800,7200))
     count_refl_grid = np.zeros((1800,7200))
 
     for folder in directory.iterdir():
-        if folder.is_dir():            
+        if folder.is_dir():
             for file in folder.iterdir():
                 if file.is_file() and file.suffix == '.nc' and month in file.name:
                     print(f"Reading file: {file.as_posix()}")
                     snr_grid, refl_grid, count_snr_grid, count_refl_grid = read_file(file, snr_grid, refl_grid, count_snr_grid, count_refl_grid)
+
+    mask_snr = count_snr_grid > 0
+    mask_refl = count_refl_grid > 0
  
-    snr_grid = np.nan_to_num(snr_grid, nan=-9999)
-    refl_grid = np.nan_to_num(refl_grid, nan=-9999)
-    count_snr_grid = np.nan_to_num(count_snr_grid, nan=-9999)
-    count_refl_grid = np.nan_to_num(count_refl_grid, nan=-9999)
+    snr_grid[mask_snr] = snr_grid[mask_snr] / count_snr_grid[mask_snr]
+    refl_grid[mask_refl] = refl_grid[mask_refl] / count_refl_grid[mask_refl]
+
+    snr_grid[~mask_snr] = -9999
+    refl_grid[~mask_refl] = -9999
 
     with open('/data01/lpu/cygnss_snr_grid.pkl', 'wb') as f:
         pickle.dump(snr_grid, f)
     with open('/data01/lpu/cygnss_reflectivity_grid.pkl', 'wb') as f:
         pickle.dump(refl_grid, f)
-    with open('/data01/lpu/cygnss_count_snr_grid.pkl', 'wb') as f:
-        pickle.dump(count_snr_grid, f)
-    with open('/data01/lpu/cygnss_count_reflectivity_grid.pkl', 'wb') as f:
-        pickle.dump(count_refl_grid, f)
