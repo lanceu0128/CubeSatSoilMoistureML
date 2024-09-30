@@ -90,7 +90,8 @@ if __name__ == "__main__":
         snr_grid[~mask_snr] = -9999
         refl_grid[~mask_refl] = -9999
 
-        with open(f'/data01/lpu/CYGNSS/SNR/{date[:4]}/{date}.pkl', 'wb') as f:
-            pickle.dump(snr_grid, f)
-        with open(f'/data01/lpu/CYGNSS/reflectivity/{date[:4]}/{date}.pkl', 'wb') as f:
-            pickle.dump(refl_grid, f)
+        snr_grid = snr_grid.astype(np.float32)
+        refl_grid = refl_grid.astype(np.float32)
+
+        snr_grid.tofile(f"/data01/lpu/CYGNSS/SNR/{date[:4]}/{date}.dat")
+        refl_grid.tofile(f"/data01/lpu/CYGNSS/reflectivity/{date[:4]}/{date}.dat")

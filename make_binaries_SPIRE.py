@@ -42,11 +42,11 @@ if __name__ == "__main__":
             count_refl_grid = np.zeros((3600,7200))
 
             for j, file in enumerate(folder.iterdir()):
-                if file.is_file() and file.suffix == '.nc':        
+                if file.is_file() and file.suffix == '.nc':      
                     if (j % 250 == 0):
                         print(f"- Reading file #{j}")
 
-                        snr_grid, refl_grid, count_snr_grid, count_refl_grid = read_file(file, snr_grid, refl_grid, count_snr_grid, count_refl_grid)
+                    snr_grid, refl_grid, count_snr_grid, count_refl_grid = read_file(file, snr_grid, refl_grid, count_snr_grid, count_refl_grid)
 
             mask_snr = count_snr_grid > 0
             mask_refl = count_refl_grid > 0
@@ -57,7 +57,11 @@ if __name__ == "__main__":
             snr_grid[~mask_snr] = -9999
             refl_grid[~mask_refl] = -9999
 
-            with open(f'/data01/lpu/SPIRE/SNR/2024/{folder.name}.pkl', 'wb') as f:
-                pickle.dump(snr_grid, f)
-            with open(f'/data01/lpu/SPIRE/reflectivity/2024/{folder.name}.pkl', 'wb') as f:
-                pickle.dump(refl_grid, f)
+            re_match = re.search(r'(\d{4})(\d{2})(\d{2})', folder.name)
+            date = f"{re_match.group(1)}-{re_match.group(2)}-{re_match.group(3)}"
+
+            snr_grid = snr_grid.astype(np.float32)
+            refl_grid = refl_grid.astype(np.float32)
+
+            snr_grid.tofile(f"/data01/lpu/SPIRE/SNR/2024/{date}.dat")
+            refl_grid.tofile(f"/data01/lpu/SPIRE/reflectivity/2024/{date}.dat")
