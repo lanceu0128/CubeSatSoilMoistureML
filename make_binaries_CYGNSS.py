@@ -44,9 +44,6 @@ if __name__ == "__main__":
     paths_for_date = {}
 
     for year in directory.iterdir():
-        if year.name == "2018":
-            continue
-
         if not year.is_dir():
             continue            
         
