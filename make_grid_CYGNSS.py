@@ -2,6 +2,7 @@ import netCDF4
 from pathlib import Path
 import numpy as np
 import pickle
+from datetime import datetime
 
 # Task: make a grid of CYGNSS SNR and Reflectivity data for comparison and validation of SPIRE data
 # very few comments because the logic is almost exactly the same as make_grid.py  
@@ -36,7 +37,10 @@ def read_file(file, grid_snr, grid_refl, grid_count_snr, grid_count_refl):
 
 if __name__ == "__main__":
     directory = Path('/data01/jyin/CYGNSS/data/V3.2/2023/')
-    month = "-e202305"
+
+    # data for comparison with SPIRE
+    start_date = datetime.strptime("20240125", "%Y%m%d")
+    end_date = datetime.strptime("20240602", "%Y%m%d")
 
     # lat ~ [-45, 45], so we need to have 1800 lat values in the grid to keep the same resolution
     snr_grid = np.zeros((1800,7200))
@@ -47,9 +51,13 @@ if __name__ == "__main__":
     for folder in directory.iterdir():
         if folder.is_dir():
             for file in folder.iterdir():
-                if file.is_file() and file.suffix == '.nc' and month in file.name:
-                    print(f"Reading file: {file.as_posix()}")
-                    snr_grid, refl_grid, count_snr_grid, count_refl_grid = read_file(file, snr_grid, refl_grid, count_snr_grid, count_refl_grid)
+                if file.is_file() and file.suffix == '.nc':
+                    date_str = filename.split("-e")[-1][:8]
+                    file_date = datetime.strptime(date_str, "%Y%m%d")
+
+                    if start_date <= file_date <= end_date:
+                        print(f"Reading file: {file.as_posix()}")
+                        snr_grid, refl_grid, count_snr_grid, count_refl_grid = read_file(file, snr_grid, refl_grid, count_snr_grid, count_refl_grid)
 
     mask_snr = count_snr_grid > 0
     mask_refl = count_refl_grid > 0

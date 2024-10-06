@@ -40,45 +40,23 @@ def create_figure(grid, title, label, file_name, isomin, isomax, latmin, latmax)
 def visualize_SPIRE():
     with open('/data01/lpu/spire_snr_grid.pkl', 'rb') as f:
         spire_snr_grid = pickle.load(f)
-        create_figure(spire_snr_grid, "SPIRE SNR 04-2024", "SNR (dB)", "figures/spire_snr_map.png", 0, 2, -90, 90)
+        create_figure(spire_snr_grid, "SPIRE SNR (01/25/2024-06/02/2024)", "SNR (dB)", "figures/spire_snr_map.png", 0, 2, -90, 90)
     with open('/data01/lpu/spire_reflectivity_grid.pkl', 'rb') as f:
         spire_refl_grid = pickle.load(f)
-        create_figure(spire_refl_grid, "SPIRE Reflectivity 04-2024", "Reflectivity (dBZ)", "figures/spire_reflectivity_map.png", 0, 0.015, -90, 90)
+        create_figure(spire_refl_grid, "SPIRE Reflectivity (01/25/2024-06/02/2024)", "Reflectivity (dBZ)", "figures/spire_reflectivity_map.png", 0, 0.015, -90, 90)
 
 def visualize_CYGNSS():
     with open('/data01/lpu/cygnss_snr_grid.pkl', 'rb') as f:
         cygnss_snr_grid = pickle.load(f)
-        create_figure(cygnss_snr_grid, "CYGNSS SNR 04-2024", "SNR (dB)", "figures/cygnss_snr_map.png", 0, 2, -45, 45)
+        create_figure(cygnss_snr_grid, "CYGNSS SNR (01/25/2024-06/02/2024)", "SNR (dB)", "figures/cygnss_snr_map.png", 0, 2, -45, 45)
     with open('/data01/lpu/cygnss_reflectivity_grid.pkl', 'rb') as f:
         cygnss_refl_grid = pickle.load(f)
-        create_figure(cygnss_refl_grid, "CYGNSS Reflectivity 04-2024", "Reflectivity (dBZ)", "figures/cygnss_reflectivity_map.png", 0, 0.015, -45, 45)
-
-def visualize_SPIRE_vs_CYGNSS():
-    with open('/data01/lpu/spire_snr_grid.pkl', 'rb') as f:
-        spire_snr_grid = pickle.load(f)
-    with open('/data01/lpu/spire_reflectivity_grid.pkl', 'rb') as f:
-        spire_refl_grid = pickle.load(f)
-    with open('/data01/lpu/cygnss_snr_grid.pkl', 'rb') as f:
-        cygnss_snr_grid = pickle.load(f)
-    with open('/data01/lpu/cygnss_reflectivity_grid.pkl', 'rb') as f:
-        cygnss_refl_grid = pickle.load(f)
-
-    comp_snr_grid = np.full((1800, 7200), -9999)
-    clipped_spire_snr_grid = spire_snr_grid[900:2700, :]
-    known_snr_mask = ~(clipped_spire_snr_grid == -9999) & ~(cygnss_snr_grid == -9999)
-    comp_snr_grid[known_snr_mask] = np.abs(clipped_spire_snr_grid[known_snr_mask] - cygnss_snr_grid[known_snr_mask])
-    create_figure(comp_snr_grid, "SPIRE vs CYGNSS SNR 04-2024", "Abs. Diff. in SNR (dB)", "figures/comp_snr_map.png", 0, 10, -45, 45) 
-
-    comp_refl_grid = np.full((1800, 7200), -9999)
-    clipped_spire_refl_grid = spire_refl_grid[900:2700, :]
-    known_refl_mask = ~(clipped_spire_refl_grid == -9999) & ~(cygnss_refl_grid == -9999)
-    comp_refl_grid[known_refl_mask] = np.abs(clipped_spire_refl_grid[known_refl_mask] - cygnss_refl_grid[known_refl_mask])
-    create_figure(comp_refl_grid, "SPIRE vs CYGNSS Reflectivity 04-2024", "Abs. Diff. in Reflectivity (dBZ)", "figures/comp_reflectivity_map.png", 0, 0.075, -45, 45) 
+        create_figure(cygnss_refl_grid, "CYGNSS Reflectivity (01/25/2024-06/02/2024)", "Reflectivity (dBZ)", "figures/cygnss_reflectivity_map.png", 0, 0.015, -45, 45)
 
 def visualize_binary_examples():
-    # with open('/data01/lpu/CYGNSS/reflectivity/2023/2023-02-01.pkl', 'rb') as f:
-    #     cygnss_refl_grid = pickle.load(f)
-    #     create_figure(cygnss_refl_grid, "CYGNSS Reflectivity 02-01-2023", "Reflectivity (dBZ)", "figures/cygnss_refl_binary_map.png",  0, 0.015, -45, 45) 
+    with open('/data01/lpu/CYGNSS/reflectivity/2023/2023-02-01.pkl', 'rb') as f:
+        cygnss_refl_grid = pickle.load(f)
+        create_figure(cygnss_refl_grid, "CYGNSS Reflectivity 02-01-2023", "Reflectivity (dBZ)", "figures/cygnss_refl_binary_map.png",  0, 0.015, -45, 45)
     with open('/data01/lpu/SPIRE/reflectivity/2024/20240125.pkl', 'rb') as f:
         spire_snr_grid = pickle.load(f)
         create_figure(spire_snr_grid, "SPIRE Reflectivity 01-25-2024", "SNR (dB)", "figures/spire_snr_binary_map.png",  0, 2, -90, 90) 
@@ -86,4 +64,6 @@ def visualize_binary_examples():
 if __name__ == "__main__":
     # i've ran into memory issues with this file, seemingly from caching too much
     # closing the terminal and reopening seems to fix this for mes
-    visualize_binary_examples()
+    visualize_SPIRE()
+    visualize_CYGNSS()    
+    # visualize_binary_examples()

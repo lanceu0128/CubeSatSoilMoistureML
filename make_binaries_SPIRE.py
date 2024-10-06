@@ -10,13 +10,14 @@ def read_file(file, grid_snr, grid_refl, grid_count_snr, grid_count_refl):
     lat = nc_file.variables['sp_lat'][:]
 
     x = (lon / 0.05).astype(int)
-    y = ((lat + 45) / 0.05).astype(int)
+    y = ((lat + 90) / 0.05).astype(int)
     x = np.clip(x, 0, 7199)
+    x = np.clip(x, 0, 3599)
 
     if 'reflect_snr_at_sp' in nc_file.variables.keys():
         snr = nc_file.variables['reflect_snr_at_sp'][:]
         
-        valid_snr = ~np.ma.getmaskarray(snr) & ~np.isnan(snr) & (y >= 0) & (y < 1800)
+        valid_snr = ~np.ma.getmaskarray(snr) & ~np.isnan(snr)
         
         grid_snr[y[valid_snr], x[valid_snr]] += snr[valid_snr]
         grid_count_snr[y[valid_snr], x[valid_snr]] += 1
@@ -24,7 +25,7 @@ def read_file(file, grid_snr, grid_refl, grid_count_snr, grid_count_refl):
     if "reflectivity_at_sp" in nc_file.variables.keys():
         refl = nc_file.variables['reflectivity_at_sp'][:]
 
-        valid_refl = ~np.ma.getmaskarray(refl) & ~np.isnan(refl) & (y >= 0) & (y < 1800)
+        valid_refl = ~np.ma.getmaskarray(refl) & ~np.isnan(refl)
 
         grid_refl[y[valid_refl], x[valid_refl]] += refl[valid_refl]
         grid_count_refl[y[valid_refl], x[valid_refl]] += 1
