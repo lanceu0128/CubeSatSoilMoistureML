@@ -13,8 +13,8 @@ def calculate_statistics(grid1, grid2):
     valid_diff = diff[mask]
 
     bias = np.mean(valid_diff)
-    rmsd = np.sqrt(np.mean(valid_diff**2))
-    corr_coeff = np.corrcoef(grid1, grid2)[0, 1]
+    rmsd = np.sqrt(np.mean(np.square(valid_diff)))
+    corr_coeff = np.corrcoef(grid1[mask], grid2[mask])[0, 1]
 
     stats = (bias, rmsd, corr_coeff)
     diff_grid = np.full(grid1.shape, -9999.00)
@@ -67,6 +67,10 @@ def visualize_SPIRE_vs_CYGNSS():
         spire_refl_grid = pickle.load(f)
     with open('/data01/lpu/cygnss_reflectivity_grid.pkl', 'rb') as f:
         cygnss_refl_grid = pickle.load(f)
+    with open('/data01/lpu/spire_snr_grid.pkl', 'rb') as f:
+        spire_snr_grid = pickle.load(f)
+    with open('/data01/lpu/cygnss_snr_grid.pkl', 'rb') as f:
+        cygnss_snr_grid = pickle.load(f)
 
     spire_refl_grid = spire_refl_grid[900:2700, :]
     refl_grid, stats = calculate_statistics(spire_refl_grid, cygnss_refl_grid)
@@ -75,6 +79,7 @@ def visualize_SPIRE_vs_CYGNSS():
     spire_snr_grid = spire_snr_grid[900:2700, :]
     snr_grid, stats = calculate_statistics(spire_snr_grid, cygnss_snr_grid)
     create_figure(snr_grid, "SPIRE vs CYGNSS SNR (012024-062024)", "Abs. Diff. in SNR (dB)", "figures/comp_snr_map.png", 0, 16, 0, 360, -45, 45, stats) 
+
 
 def visualize_SPIRE_vs_CGYNSS_area():
     with open('/data01/lpu/spire_reflectivity_grid.pkl', 'rb') as f:
@@ -88,6 +93,19 @@ def visualize_SPIRE_vs_CGYNSS_area():
     create_figure(refl_grid, "SPIRE vs CYGNSS Reflectivity, Australia (01-06/2024)", "Abs. Diff. in Reflectivity (dBZ)", "figures/comp_reflectivity_australia_map.png", 0, 0.06, 100, 160, -45, -10) 
     create_figure(refl_grid, "SPIRE vs CYGNSS Reflectivity, North/Central America (01-06/2024)", "Abs. Diff. in Reflectivity (dBZ)", "figures/comp_reflectivity_america_map.png", 0, 0.06, 220, 300, 10, 45)
 
+def visualize_linear_regression():
+    # with open('/data01/lpu/slope_grid.pkl', 'rb') as f:
+    #     slope_grid = pickle.load(f)
+    # with open('/data01/lpu/intercept_grid.pkl', 'rb') as f:
+    #     intercept_grid = pickle.load(f)
+    with open('/data01/lpu/mse_grid.pkl', 'rb') as f:
+        mse_grid = pickle.load(f)
+
+    # create_figure(slope_grid, "Linear Regression Slope (012024-062024)", "Slope Value", "figures/regression/slope_map.png", -0.5, 0.5, 0, 360, -45, 45)
+    # create_figure(intercept_grid, "Linear Regression Intercept (012024-062024)", "Intercept Value", "figures/regression/intercept_map.png", -10, 10, 0, 360, -45, 45)
+    create_figure(mse_grid, "Linear Regression MSE (012024-062024)", "MSE Value", "figures/regression/mse_map.png", 0, 1000, 0, 360, -45, 45)
+
 if __name__ == "__main__":
     # visualize_SPIRE_vs_CYGNSS()
-    visualize_SPIRE_vs_CGYNSS_area()
+    # visualize_SPIRE_vs_CGYNSS_area()
+    visualize_linear_regression()

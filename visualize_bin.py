@@ -28,10 +28,13 @@ def create_bin_figure(grid, title, file_name, min_val, max_val, bin_size, log_sc
     plt.close()
 
 if __name__ == "__main__":
-    with open('/data01/lpu/snr_grid.pkl', 'rb') as f:
-        snr_grid = pickle.load(f)
-    with open('/data01/lpu/reflectivity_grid.pkl', 'rb') as f:
-        reflectivity_grid = pickle.load(f)
+    with open('/data01/lpu/slope_grid.pkl', 'rb') as f:
+        slope_grid = pickle.load(f)
+    with open('/data01/lpu/mse_grid.pkl', 'rb') as f:
+        mse_grid = pickle.load(f)
 
-    create_bin_figure(snr_grid, "Distribution of Values in SNR 202404 Grid", "snr_bins.png", -30, 30, 5)
-    create_bin_figure(reflectivity_grid, "Distribution of Values in Reflectivity 202404 Grid", "reflectivity_bins.png", 0, 10, 1, True)
+    print(np.max(slope_grid[slope_grid != -9999]))
+    print(np.max(mse_grid[mse_grid != -9999]))
+
+    create_bin_figure(slope_grid, "Distribution of Values in LR Slope", "figures/regression/slope_bins.png", 0, 1000000, 1000, True)
+    create_bin_figure(mse_grid, "Distribution of Values in LR MSE", "figures/regression/mse_bins.png", 0, 1000000, 1000, True)

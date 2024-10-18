@@ -12,7 +12,7 @@ def read_file(file, grid_snr, grid_refl, grid_count_snr, grid_count_refl):
     x = (lon / 0.05).astype(int)
     y = ((lat + 90) / 0.05).astype(int)
     x = np.clip(x, 0, 7199)
-    x = np.clip(x, 0, 3599)
+    y = np.clip(y, 0, 3599)
 
     if 'reflect_snr_at_sp' in nc_file.variables.keys():
         snr = nc_file.variables['reflect_snr_at_sp'][:]
