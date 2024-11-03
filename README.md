@@ -1,8 +1,9 @@
 # CubeSatSoilMoistureML
 
-## Everything Else
+This project's aim is to use ML to obtain soil moisture retrievals through data from other satellites.
 
-Coming Soon!
+## Weekly Reports
+Summaries of weekly progress on this project from my end are [here](https://docs.google.com/presentation/d/1B_XuNAdR7wOspA3WuINxxRgFHerD8ueCrNhVuMWLw2A/edit#slide=id.g3115a5e8b0c_0_7).
 
 ## Reading Daily Binaries
 
